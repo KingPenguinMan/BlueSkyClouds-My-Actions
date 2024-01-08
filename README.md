@@ -24,7 +24,7 @@
 # 定时执行
 1. 支持手动执行，具体在Actions中选中要执行的Workflows后再在右侧可以看到Run workflow，点击即可运行此workflow。
 
-2. 如果嫌上一步麻烦的，也可以直接点击一下star，你会发现所有的workflow都已执行。
+2. 如果嫌上一步麻烦的，也可以直接点击一下star，你会发现所有的workflow都已执行 。
 
 3. 如需修改执行时间自行修改`.github\workflows\`下面的yaml内的` cron:` 执行时间为国际标准时间 [时间转换](http://www.timebie.com/cn/universalbeijing.php) 分钟在前 小时在后 尽量提前几分钟,因为下载安装部署环境需要一定时间
 
