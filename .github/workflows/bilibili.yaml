@@ -4,7 +4,6 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "5 16 * * *"
-  # 移除了过时的 watch 触发器
 
 jobs:
   build:
@@ -21,7 +20,6 @@ jobs:
           cache: 'pip'
 
       - name: "安装依赖包"
-        # 修改点：在这里手动补充安装 chardet
         run: |
           pip install -r ./requirements.txt
           pip install chardet
