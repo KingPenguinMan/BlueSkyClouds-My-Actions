@@ -1,45 +1,45 @@
 name: 哔哩哔哩签到
 
 on:
-    workflow_dispatch:
-    schedule:
-        - cron: "5 16 * * *"
-    watch:
-        types: [started]
+  workflow_dispatch: # 保留手动运行按钮
+  schedule:
+    - cron: "5 16 * * *" # UTC 16:05 = 北京时间 00:05
+  # 移除了 watch: types: [started]。通过 Star 仓库触发运行是几年前的过时做法，现在官方推荐用 workflow_dispatch。
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        if: github.event.repository.owner.id == github.event.sender.id
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v2
+  build:
+    runs-on: ubuntu-latest
+    # 移除了 if 判断。因为删除了 watch 事件，现在只有拥有仓库权限的人才能手动触发或定时运行，不再需要那个判断。
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4  # 升级到 v4
 
-            - name: "Set up Python"
-              uses: actions/setup-python@v1
-              with:
-                python-version: 3.8
+      - name: "Set up Python"
+        uses: actions/setup-python@v5 # 关键修改：升级到 v5
+        with:
+          python-version: '3.8'       # 即使环境没预装，v5 也会自动下载安装 3.8
+          cache: 'pip'                # 新增优化：缓存 pip 依赖，下次运行速度更快
 
-            - name: "安装依赖包"
-              run: pip install -r ./requirements.txt
+      - name: "安装依赖包"
+        run: pip install -r ./requirements.txt
 
-            - name: "运行 哔哩哔哩签到"
-              run: python3 function/bilibili/bilibili.py
-              env:
-                  BILI_USER: ${{ secrets.BILI_USER }}
-                  BILI_PASS: ${{ secrets.BILI_PASS }}
-                  BILI_COOKIE: ${{ secrets.BILI_COOKIE }}
-                  BILI_NUM: ${{ secrets.BILI_NUM }}
-                  BILI_TYPE: ${{ secrets.BILI_TYPE }}
-                  SEND_KEY: ${{ secrets.SEND_KEY }}
-                  PUSH_KEY: ${{ secrets.PUSH_KEY }}
-                  BARK_PUSH: ${{ secrets.BARK_PUSH }}
-                  PUSH_PLUS_TOKEN: ${{ secrets.PUSH_PLUS_TOKEN}}
-                  PUSH_PLUS_USER: ${{ secrets.PUSH_PLUS_USER}}
-                  TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
-                  TG_USER_ID: ${{ secrets.TG_USER_ID }}
-                  BARK_SOUND: ${{ secrets.BARK_SOUND }}
-                  DD_BOT_TOKEN: ${{ secrets.DD_BOT_TOKEN }}
-                  DD_BOT_SECRET: ${{ secrets.DD_BOT_SECRET }}
-                  QYWX_AM: ${{ secrets.QYWX_AM}}
-#最后推送 2021年4月22日
+      - name: "运行 哔哩哔哩签到"
+        run: python3 function/bilibili/bilibili.py
+        env:
+          BILI_USER: ${{ secrets.BILI_USER }}
+          BILI_PASS: ${{ secrets.BILI_PASS }}
+          BILI_COOKIE: ${{ secrets.BILI_COOKIE }}
+          BILI_NUM: ${{ secrets.BILI_NUM }}
+          BILI_TYPE: ${{ secrets.BILI_TYPE }}
+          SEND_KEY: ${{ secrets.SEND_KEY }}
+          PUSH_KEY: ${{ secrets.PUSH_KEY }}
+          BARK_PUSH: ${{ secrets.BARK_PUSH }}
+          PUSH_PLUS_TOKEN: ${{ secrets.PUSH_PLUS_TOKEN}}
+          PUSH_PLUS_USER: ${{ secrets.PUSH_PLUS_USER}}
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_USER_ID: ${{ secrets.TG_USER_ID }}
+          BARK_SOUND: ${{ secrets.BARK_SOUND }}
+          DD_BOT_TOKEN: ${{ secrets.DD_BOT_TOKEN }}
+          DD_BOT_SECRET: ${{ secrets.DD_BOT_SECRET }}
+          QYWX_AM: ${{ secrets.QYWX_AM}}
