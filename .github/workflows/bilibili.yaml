@@ -1,28 +1,30 @@
 name: 哔哩哔哩签到
 
 on:
-  workflow_dispatch: # 保留手动运行按钮
+  workflow_dispatch:
   schedule:
-    - cron: "5 16 * * *" # UTC 16:05 = 北京时间 00:05
-  # 移除了 watch: types: [started]。通过 Star 仓库触发运行是几年前的过时做法，现在官方推荐用 workflow_dispatch。
+    - cron: "5 16 * * *"
+  # 移除了过时的 watch 触发器
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    # 移除了 if 判断。因为删除了 watch 事件，现在只有拥有仓库权限的人才能手动触发或定时运行，不再需要那个判断。
     
     steps:
       - name: Checkout
-        uses: actions/checkout@v4  # 升级到 v4
+        uses: actions/checkout@v4
 
       - name: "Set up Python"
-        uses: actions/setup-python@v5 # 关键修改：升级到 v5
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.8'       # 即使环境没预装，v5 也会自动下载安装 3.8
-          cache: 'pip'                # 新增优化：缓存 pip 依赖，下次运行速度更快
+          python-version: '3.8'
+          cache: 'pip'
 
       - name: "安装依赖包"
-        run: pip install -r ./requirements.txt
+        # 修改点：在这里手动补充安装 chardet
+        run: |
+          pip install -r ./requirements.txt
+          pip install chardet
 
       - name: "运行 哔哩哔哩签到"
         run: python3 function/bilibili/bilibili.py
