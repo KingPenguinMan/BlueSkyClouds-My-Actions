@@ -3,9 +3,9 @@ set -euo pipefail
 if [[ -z "${TG_BOT_TOKEN:-}" && -z "${TG_USER_ID:-}" ]]; then exit 0; fi
 : "${TG_BOT_TOKEN:?Missing TG_BOT_TOKEN}" "${TG_USER_ID:?Missing TG_USER_ID}"
 log="$RUNNER_TEMP/task-result"
-result="未能确认签到，请查看运行记录。"
+result="未能确认签到。"
 if [[ "$TASK_STATUS" != success ]]; then
-  result="工作流执行失败，请查看运行记录。"
+  result="工作流执行失败。"
 elif [[ -f "$log" ]]; then
   if [[ "$1" == tieba ]]; then
     counts=$(grep -oE '共签: [0-9]+/[0-9]+, 本次成功: [0-9]+, 本次失败: [0-9]+' "$log" | tail -1 || true)
@@ -19,7 +19,6 @@ elif [[ -f "$log" ]]; then
     elif grep -q '未填写哔咔账号密码' "$log"; then result="未配置哔咔账号或密码，已跳过。"; fi
   fi
 fi
-link="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-text=$(printf '%s · %s\n%s\n%s' "$GITHUB_WORKFLOW" "$(TZ=Asia/Shanghai date '+%m-%d %H:%M')" "$result" "$link")
+text=$(printf '%s\n%s' "$GITHUB_WORKFLOW" "$result")
 curl --silent --fail --max-time 20 --data-urlencode "chat_id=$TG_USER_ID" \
   --data-urlencode "text=$text" "https://api.telegram.org/bot$TG_BOT_TOKEN/sendMessage" | jq -e '.ok == true' >/dev/null
