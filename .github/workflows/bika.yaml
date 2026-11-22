@@ -26,7 +26,8 @@ jobs:
         run: pip install -r ./requirements.txt
 
       - name: "运行 哔咔漫画自动打哔咔"
-        run: python3 function/bika/bika.py
+        shell: bash
+        run: python3 function/bika/bika.py | tee "$RUNNER_TEMP/task-result"
         env:
           BIKA_USER: ${{ secrets.BIKA_USER }}
           BIKA_PASS: ${{ secrets.BIKA_PASS }}
@@ -35,9 +36,17 @@ jobs:
           BARK_PUSH: ${{ secrets.BARK_PUSH }}
           PUSH_PLUS_TOKEN: ${{ secrets.PUSH_PLUS_TOKEN}}
           PUSH_PLUS_USER: ${{ secrets.PUSH_PLUS_USER}}
-          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
-          TG_USER_ID: ${{ secrets.TG_USER_ID }}
+          TG_BOT_TOKEN: ''
+          TG_USER_ID: ''
           BARK_SOUND: ${{ secrets.BARK_SOUND }}
           DD_BOT_TOKEN: ${{ secrets.DD_BOT_TOKEN }}
           DD_BOT_SECRET: ${{ secrets.DD_BOT_SECRET }}
           QYWX_AM: ${{ secrets.QYWX_AM}}
+      - name: Telegram 签到报告
+        if: ${{ !cancelled() }}
+        shell: bash
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_USER_ID: ${{ secrets.TG_USER_ID }}
+          TASK_STATUS: ${{ job.status }}
+        run: bash .github/notify-sign.sh bika
